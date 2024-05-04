@@ -1,5 +1,7 @@
 package example.estudiantes;
 
-record Estudiantes(int id, String nombre, String apellidos, String correo, String dni) {
+import org.springframework.data.annotation.Id;
+
+record Estudiantes(@Id int id, String nombre, String apellidos, String correo, String dni) {
 	// TODO Auto-generated constructor stub
 }

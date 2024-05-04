@@ -34,15 +34,15 @@ class EstudiantesJsonTest {
 
         assertThat(json.write(estudiantes)).hasJsonPathStringValue("@.correo");
         assertThat(json.write(estudiantes)).extractingJsonPathStringValue("@.correo")
-             .isEqualTo("juanpalomo@gmail.com");
+        	.isEqualTo("juanpalomo@gmail.com");
         
-        assertThat(json.write(estudiantes)).hasJsonPathStringValue("@.dni");
+        assertThat(json.write(estudiantes)).hasJsonPathStringValue("@.dni"); 
         assertThat(json.write(estudiantes)).extractingJsonPathStringValue("@.dni")
-             .isEqualTo("01234567A");
+        .isEqualTo("01234567A");
     }
     
     @Test
-    void internsDeserializationTest() throws IOException {
+    void estudiantesDeserializationTest() throws IOException {
        String expected = """
                {
                    "id": 2,
