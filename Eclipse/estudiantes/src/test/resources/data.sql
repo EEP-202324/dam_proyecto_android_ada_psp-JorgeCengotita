@@ -1,1 +1,1 @@
-INSERT INTO estudiantes(ID, NOMBRE, APELLIDOS, CORREO, DNI) VALUES (1, 'juan', 'palomo', 'juanpalomo@gmail.com', '01234567A');
+INSERT INTO estudiantes(ID, NOMBRE, APELLIDOS, CORREO, DNI) VALUES (3, 'Pedro', 'Lopez', 'pedrolopez@gmail.com', '01234567C');
