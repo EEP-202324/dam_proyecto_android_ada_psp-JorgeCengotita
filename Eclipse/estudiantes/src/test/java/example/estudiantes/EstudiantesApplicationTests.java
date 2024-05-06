@@ -1,7 +1,9 @@
 package example.estudiantes;
 
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.net.URI;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +11,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 @SpringBootTest(webEnvironment = 
 SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,5 +49,26 @@ class EstudiantesApplicationTests {
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
       assertThat(response.getBody()).isBlank();
+    }
+    
+    @Test
+    void shouldCreateANewEstudiantes() {
+       Estudiantes newEstudiantes = new Estudiantes(0, "Pedro", null, null, null);
+       ResponseEntity<Void> createResponse = restTemplate.postForEntity("/estudiantes", newEstudiantes, Void.class);
+       assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+       URI locationOfNewEstudiantes = createResponse.getHeaders().getLocation();
+       ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfNewEstudiantes, String.class);
+       assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+       
+       assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+       // Add assertions such as these
+       DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+       Number id = documentContext.read("$.id");
+       String nombre = documentContext.read("$.nombre");
+
+       assertThat(id).isNotNull();
+       assertThat(nombre).isEqualTo("Pedro");
     }
 }
