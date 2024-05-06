@@ -1,25 +1,28 @@
 package example.estudiantes;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.net.URI;
-
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
+import java.net.URI;
 
-@SpringBootTest(webEnvironment = 
-SpringBootTest.WebEnvironment.RANDOM_PORT)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.annotation.DirtiesContext.*;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class EstudiantesApplicationTests {
     @Autowired
     TestRestTemplate restTemplate;
-
+    
+    
     @Test
     void shouldReturnAEstudiantesWhenDataIsSaved() {
         ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes/3", String.class);
@@ -52,6 +55,7 @@ class EstudiantesApplicationTests {
     }
     
     @Test
+    @DirtiesContext
     void shouldCreateANewEstudiantes() {
        Estudiantes newEstudiantes = new Estudiantes(0, "Pedro", null, null, null);
        ResponseEntity<Void> createResponse = restTemplate.postForEntity("/estudiantes", newEstudiantes, Void.class);
@@ -63,12 +67,72 @@ class EstudiantesApplicationTests {
        
        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-       // Add assertions such as these
        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
        Number id = documentContext.read("$.id");
        String nombre = documentContext.read("$.nombre");
 
        assertThat(id).isNotNull();
        assertThat(nombre).isEqualTo("Pedro");
+    }
+    
+    @Test
+    void shouldReturnAllEstudiantesWhenListIsRequested() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        int estudiantesCount = documentContext.read("$.length()");
+        assertThat(estudiantesCount).isEqualTo(3);
+
+        JSONArray ids = documentContext.read("$..id");
+        assertThat(ids).containsExactlyInAnyOrder(3, 4, 5);
+
+        JSONArray nombres = documentContext.read("$..nombre");
+        assertThat(nombres).containsExactlyInAnyOrder("Pedro", "Juan", "Alberto");
+
+        JSONArray apellidos = documentContext.read("$..apellidos");
+        assertThat(apellidos).containsExactlyInAnyOrder("Lopez", "Garcia", "Gomez");
+
+        JSONArray correos = documentContext.read("$..correo");
+        assertThat(correos).containsExactlyInAnyOrder("pedrolopez@gmail.com", "juangarcia@gmail.com", "albertogomez@gmail.com");
+
+        JSONArray dnies = documentContext.read("$..dni");
+        assertThat(dnies).containsExactlyInAnyOrder("01234567C", "01234567D", "01234567E");
+    }
+
+    @Test
+    void shouldReturnAPageOfEstudiantes() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes?page=0&size=1", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        JSONArray page = documentContext.read("$[*]");
+        assertThat(page.size()).isEqualTo(1);
+    }
+    
+    @Test
+    void shouldReturnASortedPageOfEstudiantes() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes?page=0&size=1&sort=nombre,desc", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        JSONArray read = documentContext.read("$[*]");
+        assertThat(read.size()).isEqualTo(1);
+
+        String nombre = documentContext.read("$[0].nombre");
+        assertThat(nombre).isEqualTo("Pedro");
+    }
+    
+    @Test
+    void shouldReturnASortedPageOfEstudiantesWithNoParametersAndUseDefaultValues() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        JSONArray page = documentContext.read("$[*]");
+        assertThat(page.size()).isEqualTo(3);
+
+        JSONArray nombres = documentContext.read("$..nombre");
+        assertThat(nombres).containsExactly("Pedro", "Juan", "Alberto");
     }
 }

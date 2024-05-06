@@ -3,7 +3,9 @@ package example.estudiantes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import org.assertj.core.util.Arrays;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -14,6 +16,36 @@ class EstudiantesJsonTest {
 
     @Autowired
     private JacksonTester<Estudiantes> json;
+    
+    @Autowired
+    private JacksonTester<Estudiantes[]> jsonList;
+    
+    
+    private Estudiantes[] estudiantes;
+    @BeforeEach
+    void setUp() {
+        estudiantes = Arrays.array(
+                new Estudiantes(3, "Pedro", "Lopez", "pedrolopez@gmail.com", "01234567C"),
+                new Estudiantes(4, "Juan", "Garcia", "juangarcia@gmail.com", "01234567D"),
+                new Estudiantes(5, "Alberto", "Gomez", "albertogomez@gmail.com", "01234567E"));
+    }
+    
+    @Test
+    void estudiantesListSerializationTest() throws IOException {
+       assertThat(jsonList.write(estudiantes)).isStrictlyEqualToJson("list.json");
+    }
+    
+    @Test
+    void estudiantesListDeserializationTest() throws IOException {
+    	String expected = """
+    		    [
+    		        { "id": 3, "nombre": "Pedro", "apellidos": "Lopez", "correo": "pedrolopez@gmail.com", "dni": "01234567C" },
+    		        { "id": 4, "nombre": "Juan", "apellidos": "Garcia", "correo": "juangarcia@gmail.com", "dni": "01234567D" },
+    		        { "id": 5, "nombre": "Alberto", "apellidos": "Gomez", "correo": "albertogomez@gmail.com", "dni": "01234567E" }
+    		    ]
+    		    """;
+       assertThat(jsonList.parse(expected)).isEqualTo(estudiantes);
+    }
 
     @Test
     void estudiantesSerializationTest() throws IOException {
