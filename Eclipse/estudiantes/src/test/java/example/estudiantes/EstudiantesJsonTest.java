@@ -25,9 +25,9 @@ class EstudiantesJsonTest {
     @BeforeEach
     void setUp() {
         estudiantes = Arrays.array(
-                new Estudiantes(3, "Pedro", "Lopez", "pedrolopez@gmail.com", "01234567C"),
-                new Estudiantes(4, "Juan", "Garcia", "juangarcia@gmail.com", "01234567D"),
-                new Estudiantes(5, "Alberto", "Gomez", "albertogomez@gmail.com", "01234567E"));
+                new Estudiantes(3, "Pedro", "Lopez", "pedrolopez@gmail.com", "01234567C", "usuario1"),
+                new Estudiantes(4, "Juan", "Garcia", "juangarcia@gmail.com", "01234567D", "usuario1"),
+                new Estudiantes(5, "Alberto", "Gomez", "albertogomez@gmail.com", "01234567E", "usuario1"));
     }
     
     @Test
@@ -39,9 +39,9 @@ class EstudiantesJsonTest {
     void estudiantesListDeserializationTest() throws IOException {
     	String expected = """
     		    [
-    		        { "id": 3, "nombre": "Pedro", "apellidos": "Lopez", "correo": "pedrolopez@gmail.com", "dni": "01234567C" },
-    		        { "id": 4, "nombre": "Juan", "apellidos": "Garcia", "correo": "juangarcia@gmail.com", "dni": "01234567D" },
-    		        { "id": 5, "nombre": "Alberto", "apellidos": "Gomez", "correo": "albertogomez@gmail.com", "dni": "01234567E" }
+    		        { "id": 3, "nombre": "Pedro", "apellidos": "Lopez", "correo": "pedrolopez@gmail.com", "dni": "01234567C", "owner": "usuario1"},
+    		        { "id": 4, "nombre": "Juan", "apellidos": "Garcia", "correo": "juangarcia@gmail.com", "dni": "01234567D", "owner": "usuario1"},
+    		        { "id": 5, "nombre": "Alberto", "apellidos": "Gomez", "correo": "albertogomez@gmail.com", "dni": "01234567E", "owner": "usuario1" }
     		    ]
     		    """;
        assertThat(jsonList.parse(expected)).isEqualTo(estudiantes);
@@ -49,7 +49,7 @@ class EstudiantesJsonTest {
 
     @Test
     void estudiantesSerializationTest() throws IOException {
-        Estudiantes estudiantes = new Estudiantes(1, "juan", "palomo", "juanpalomo@gmail.com", "01234567A");
+        Estudiantes estudiantes = new Estudiantes(1, "juan", "palomo", "juanpalomo@gmail.com", "01234567A", "usuario1");
         assertThat(json.write(estudiantes)).isStrictlyEqualToJson("expected.json");
 
         assertThat(json.write(estudiantes)).hasJsonPathNumberValue("@.id");
@@ -81,11 +81,12 @@ class EstudiantesJsonTest {
                    "nombre":"Pepe",
                    "apellidos":"Perez",
                    "correo":"pepeperez@gmail.com",
-                   "dni":"01234567B"
+                   "dni":"01234567B",
+                   "owner":"usuario1"
                }
                """;
        assertThat(json.parse(expected))
-               .isEqualTo(new Estudiantes(2, "Pepe", "Perez", "pepeperez@gmail.com", "01234567B"));
+               .isEqualTo(new Estudiantes(2, "Pepe", "Perez", "pepeperez@gmail.com", "01234567B", "usuario1"));
        assertThat(json.parseObject(expected).id()).isEqualTo(2);
        assertThat(json.parseObject(expected).nombre()).isEqualTo("Pepe");
        assertThat(json.parseObject(expected).apellidos()).isEqualTo("Perez");

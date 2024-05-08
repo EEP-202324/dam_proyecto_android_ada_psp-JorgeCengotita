@@ -1,5 +1,26 @@
 [
-    { "id": 3, "nombre": "Pedro", "apellidos": "Lopez", "correo": "pedrolopez@gmail.com", "dni": "01234567C" },
-    { "id": 4, "nombre": "Juan", "apellidos": "Garcia", "correo": "juangarcia@gmail.com", "dni": "01234567D" },
-    { "id": 5, "nombre": "Alberto", "apellidos": "Gomez", "correo": "albertogomez@gmail.com", "dni": "01234567E" }
+   {
+      "id":3,
+      "nombre":"Pedro",
+      "apellidos":"Lopez",
+      "correo":"pedrolopez@gmail.com",
+      "dni":"01234567C",
+      "owner":"usuario1"
+   },
+   {
+      "id":4,
+      "nombre":"Juan",
+      "apellidos":"Garcia",
+      "correo":"juangarcia@gmail.com",
+      "dni":"01234567D",
+      "owner":"usuario1"
+   },
+   {
+      "id":5,
+      "nombre":"Alberto",
+      "apellidos":"Gomez",
+      "correo":"albertogomez@gmail.com",
+      "dni":"01234567E",
+      "owner":"usuario1"
+   }
 ]

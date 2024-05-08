@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.annotation.DirtiesContext.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+//@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class EstudiantesApplicationTests {
     @Autowired
     TestRestTemplate restTemplate;
@@ -57,7 +57,7 @@ class EstudiantesApplicationTests {
     @Test
     @DirtiesContext
     void shouldCreateANewEstudiantes() {
-       Estudiantes newEstudiantes = new Estudiantes(0, "Pedro", null, null, null);
+       Estudiantes newEstudiantes = new Estudiantes(0, "Pedro", null, null, null, "usuario1");
        ResponseEntity<Void> createResponse = restTemplate.postForEntity("/estudiantes", newEstudiantes, Void.class);
        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
