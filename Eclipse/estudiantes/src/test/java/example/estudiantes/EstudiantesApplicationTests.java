@@ -25,8 +25,9 @@ class EstudiantesApplicationTests {
     
     @Test
     void shouldReturnAEstudiantesWhenDataIsSaved() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes/3", String.class);
-
+    	ResponseEntity<String> response = restTemplate
+                .withBasicAuth("usuario1", "abc123") // Add this
+                .getForEntity("/estudiantes/3", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         
         DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -48,7 +49,7 @@ class EstudiantesApplicationTests {
     
     @Test
     void shouldNotReturnAEstudiantesWithAnUnknownId() {
-      ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes/1000", String.class);
+      ResponseEntity<String> response = restTemplate.withBasicAuth("usuario1", "abc123").getForEntity("/estudiantes/1000", String.class);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
       assertThat(response.getBody()).isBlank();
@@ -58,11 +59,11 @@ class EstudiantesApplicationTests {
     @DirtiesContext
     void shouldCreateANewEstudiantes() {
        Estudiantes newEstudiantes = new Estudiantes(0, "Pedro", null, null, null, "usuario1");
-       ResponseEntity<Void> createResponse = restTemplate.postForEntity("/estudiantes", newEstudiantes, Void.class);
+       ResponseEntity<Void> createResponse = restTemplate.withBasicAuth("usuario1", "abc123").postForEntity("/estudiantes", newEstudiantes, Void.class);
        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
        URI locationOfNewEstudiantes = createResponse.getHeaders().getLocation();
-       ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfNewEstudiantes, String.class);
+       ResponseEntity<String> getResponse = restTemplate.withBasicAuth("usuario1", "abc123").getForEntity(locationOfNewEstudiantes, String.class);
        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
        
        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -77,7 +78,7 @@ class EstudiantesApplicationTests {
     
     @Test
     void shouldReturnAllEstudiantesWhenListIsRequested() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes", String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth("usuario1", "abc123").getForEntity("/estudiantes", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -102,7 +103,7 @@ class EstudiantesApplicationTests {
 
     @Test
     void shouldReturnAPageOfEstudiantes() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes?page=0&size=1", String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth("usuario1", "abc123").getForEntity("/estudiantes?page=0&size=1", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -112,7 +113,7 @@ class EstudiantesApplicationTests {
     
     @Test
     void shouldReturnASortedPageOfEstudiantes() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes?page=0&size=1&sort=nombre,desc", String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth("usuario1", "abc123").getForEntity("/estudiantes?page=0&size=1&sort=nombre,desc", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -125,7 +126,7 @@ class EstudiantesApplicationTests {
     
     @Test
     void shouldReturnASortedPageOfEstudiantesWithNoParametersAndUseDefaultValues() {
-        ResponseEntity<String> response = restTemplate.getForEntity("/estudiantes", String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth("usuario1", "abc123").getForEntity("/estudiantes", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -134,5 +135,34 @@ class EstudiantesApplicationTests {
 
         JSONArray nombres = documentContext.read("$..nombre");
         assertThat(nombres).containsExactly("Alberto" , "Juan" , "Pedro");
+    }
+    
+    @Test
+    void shouldNotReturnEstudiantesWhenUsingBadCredentials() {
+        ResponseEntity<String> response = restTemplate
+          .withBasicAuth("BAD-USER", "abc123")
+          .getForEntity("/estudiantes/3", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        response = restTemplate
+          .withBasicAuth("usuario1", "BAD-PASSWORD")
+          .getForEntity("/estudiantes/3", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+    
+    @Test
+    void shouldRejectUsersWhoAreNotEstudiantesOwners() {
+        ResponseEntity<String> response = restTemplate
+          .withBasicAuth("hank-owns-no-cards", "qrs456")
+          .getForEntity("/estudiantes/3", String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+    
+    @Test
+    void shouldNotAllowAccessToEstudiantesTheyDoNotOwn() {
+        ResponseEntity<String> response = restTemplate
+          .withBasicAuth("usuario1", "abc123")
+          .getForEntity("/estudiantes/6", String.class); // Elenas data
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }
