@@ -10,6 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/estudiantes")
@@ -21,8 +22,8 @@ class EstudiantesController {
 	   }
 
 	@GetMapping("/{requestedId}")
-	ResponseEntity<Estudiantes> findById(@PathVariable Integer requestedId) {
-		Optional<Estudiantes> estudiantesOptional = estudiantesRepository.findById(requestedId);
+	ResponseEntity<Estudiantes> findById(@PathVariable Integer requestedId, Principal principal) {
+		Optional<Estudiantes> estudiantesOptional = Optional.ofNullable(estudiantesRepository.findByIdAndOwner(requestedId, principal.getName()));
 		if (estudiantesOptional.isPresent()) {
 	        return ResponseEntity.ok(estudiantesOptional.get());
 	    } else {
@@ -41,8 +42,8 @@ class EstudiantesController {
 	}	
 	
 	@GetMapping
-	private ResponseEntity<List<Estudiantes>> findAll(Pageable pageable) {
-	    Page<Estudiantes> page = estudiantesRepository.findAll(
+	private ResponseEntity<List<Estudiantes>> findAll(Pageable pageable, Principal principal) {
+	    Page<Estudiantes> page = estudiantesRepository.findByOwner(principal.getName(),
 	    		PageRequest.of(
 	    		        pageable.getPageNumber(),
 	    		        pageable.getPageSize(),
