@@ -133,6 +133,6 @@ class EstudiantesApplicationTests {
         assertThat(page.size()).isEqualTo(3);
 
         JSONArray nombres = documentContext.read("$..nombre");
-        assertThat(nombres).containsExactly("Pedro", "Juan", "Alberto");
+        assertThat(nombres).containsExactly("Alberto" , "Juan" , "Pedro");
     }
 }

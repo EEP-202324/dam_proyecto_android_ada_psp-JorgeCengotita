@@ -46,7 +46,7 @@ class EstudiantesController {
 	    		PageRequest.of(
 	    		        pageable.getPageNumber(),
 	    		        pageable.getPageSize(),
-	    		        pageable.getSortOr(Sort.by(Sort.Direction.DESC, "nombre"))
+	    		        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "nombre"))
 	    		));
 	    return ResponseEntity.ok(page.getContent());
 	}
