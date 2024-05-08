@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.*;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/estudiantes")
@@ -22,24 +22,26 @@ class EstudiantesController {
 	   }
 
 	@GetMapping("/{requestedId}")
-	ResponseEntity<Estudiantes> findById(@PathVariable Integer requestedId, Principal principal) {
-		Optional<Estudiantes> estudiantesOptional = Optional.ofNullable(estudiantesRepository.findByIdAndOwner(requestedId, principal.getName()));
-		if (estudiantesOptional.isPresent()) {
-	        return ResponseEntity.ok(estudiantesOptional.get());
+	private ResponseEntity<Estudiantes> findById(@PathVariable Integer requestedId, Principal principal) {
+		Estudiantes estudiantes = findEstudiantes(requestedId, principal);
+	    if (estudiantes != null) {
+	        return ResponseEntity.ok(estudiantes);
 	    } else {
 	        return ResponseEntity.notFound().build();
 	    }
 	}
+
 	
 	@PostMapping
-	private ResponseEntity<Void> createEstudiantes(@RequestBody Estudiantes newEstudiantesRequest, UriComponentsBuilder ucb) {
-	   Estudiantes savedEstudiantes = estudiantesRepository.save(newEstudiantesRequest);
-	   URI locationOfNewEstudiantes = ucb
+	private ResponseEntity<Void> createEstudiantes(UriComponentsBuilder ucb, Principal principal) {
+	    Estudiantes newEstudiantes = new Estudiantes(null, "Pedro", null, null, null, principal.getName());
+	    Estudiantes savedEstudiantes = estudiantesRepository.save(newEstudiantes);
+	    URI locationOfNewEstudiantes = ucb
 	            .path("estudiantes/{id}")
 	            .buildAndExpand(savedEstudiantes.id())
 	            .toUri();
-	   return ResponseEntity.created(locationOfNewEstudiantes).build();
-	}	
+	    return ResponseEntity.created(locationOfNewEstudiantes).build();
+	}
 	
 	@GetMapping
 	private ResponseEntity<List<Estudiantes>> findAll(Pageable pageable, Principal principal) {
@@ -50,5 +52,30 @@ class EstudiantesController {
 	    		        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "nombre"))
 	    		));
 	    return ResponseEntity.ok(page.getContent());
+	}
+	
+	@PutMapping("/{requestedId}")
+	private ResponseEntity<Void> putEstudiantes(@PathVariable Integer requestedId, @RequestBody Estudiantes estudiantesUpdate, Principal principal) {
+		Estudiantes estudiantes = findEstudiantes(requestedId, principal);
+	    if (estudiantes != null) {
+	        Estudiantes updatedEstudiantes = new Estudiantes(estudiantes.id(), estudiantesUpdate.nombre(), estudiantes.apellidos(), estudiantes.correo(), estudiantes.dni(), principal.getName());
+	        estudiantesRepository.save(updatedEstudiantes);
+	        return ResponseEntity.noContent().build();
+	    }
+	    return ResponseEntity.notFound().build();
+	}
+
+	private Estudiantes findEstudiantes(Integer requestedId, Principal principal) {
+	    return estudiantesRepository.findByIdAndOwner(requestedId, principal.getName());
+	}
+	
+	@DeleteMapping("/{id}")
+	private ResponseEntity<Void> deleteEstudiantes(@PathVariable Integer id, Principal principal) {	    
+	    if (estudiantesRepository.existsByIdAndOwner(id, principal.getName())) {
+	        estudiantesRepository.deleteById(id);
+	        return ResponseEntity.noContent().build();
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
 	}
 }

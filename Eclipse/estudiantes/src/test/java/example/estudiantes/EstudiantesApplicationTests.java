@@ -10,11 +10,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 
 import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.annotation.DirtiesContext.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -58,7 +59,8 @@ class EstudiantesApplicationTests {
     @Test
     @DirtiesContext
     void shouldCreateANewEstudiantes() {
-       Estudiantes newEstudiantes = new Estudiantes(0, "Pedro", null, null, null, "usuario1");
+       Estudiantes newEstudiantes = new Estudiantes(null, "Pedro", null, null, null, null);
+       
        ResponseEntity<Void> createResponse = restTemplate.withBasicAuth("usuario1", "abc123").postForEntity("/estudiantes", newEstudiantes, Void.class);
        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -162,7 +164,82 @@ class EstudiantesApplicationTests {
     void shouldNotAllowAccessToEstudiantesTheyDoNotOwn() {
         ResponseEntity<String> response = restTemplate
           .withBasicAuth("usuario1", "abc123")
-          .getForEntity("/estudiantes/6", String.class); // Elenas data
+          .getForEntity("/estudiantes/6", String.class); // Elena`s data
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+    
+    @Test
+    @DirtiesContext
+    void shouldUpdateAnExistingEstudiantes() {
+        Estudiantes estudiantesUpdate = new Estudiantes(null, "Pedrito", null, null, null, null);
+        HttpEntity<Estudiantes> request = new HttpEntity<>(estudiantesUpdate);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .exchange("/estudiantes/3", HttpMethod.PUT, request, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<String> getResponse = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .getForEntity("/estudiantes/3", String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.id");
+        String nombre = documentContext.read("$.nombre");
+        assertThat(id).isEqualTo(3);
+        assertThat(nombre).isEqualTo("Pedrito");
+    }
+    
+    @Test
+    void shouldNotUpdateEstudiantesThatDoesNotExist() {
+        Estudiantes unknownEstudiante = new Estudiantes(null, "Pedrito", null, null, null, null);
+        HttpEntity<Estudiantes> request = new HttpEntity<>(unknownEstudiante);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .exchange("/estudiantes/99999", HttpMethod.PUT, request, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+    
+    @Test
+    void shouldNotUpdateEstudiantesThatIsOwnedBySomeoneElse() {
+        Estudiantes elenaEstudiante = new Estudiantes(null, "Elena", null, null, null, null);
+        HttpEntity<Estudiantes> request = new HttpEntity<>(elenaEstudiante);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .exchange("/estudiantes/6", HttpMethod.PUT, request, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DirtiesContext
+    void shouldDeleteAnExistingEstudiantes() {
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .exchange("/estudiantes/3", HttpMethod.DELETE, null, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        ResponseEntity<String> getResponse = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .getForEntity("/estudiantes/3", String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+    
+    @Test
+    void shouldNotDeleteEstudiantesThatDoesNotExist() {
+        ResponseEntity<Void> deleteResponse = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .exchange("/estudiantes/99999", HttpMethod.DELETE, null, Void.class);
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+    
+    @Test
+    void shouldNotAllowDeletionOfEstudiantesTheyDoNotOwn() {
+        ResponseEntity<Void> deleteResponse = restTemplate
+                .withBasicAuth("usuario1", "abc123")
+                .exchange("/estudiantes/6", HttpMethod.DELETE, null, Void.class);
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        
+        ResponseEntity<String> getResponse = restTemplate
+                .withBasicAuth("usuario2", "xyz789")
+                .getForEntity("/estudiantes/6", String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }

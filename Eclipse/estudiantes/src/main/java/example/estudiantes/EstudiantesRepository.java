@@ -7,5 +7,6 @@ import org.springframework.data.domain.PageRequest;
 
 interface EstudiantesRepository extends CrudRepository <Estudiantes, Integer>, PagingAndSortingRepository<Estudiantes, Integer>{
 	Estudiantes findByIdAndOwner(Integer id, String owner);
-	   Page<Estudiantes> findByOwner(String owner, PageRequest pageRequest);
+	boolean existsByIdAndOwner(Integer id, String owner);
+	Page<Estudiantes> findByOwner(String owner, PageRequest pageRequest);
 }
