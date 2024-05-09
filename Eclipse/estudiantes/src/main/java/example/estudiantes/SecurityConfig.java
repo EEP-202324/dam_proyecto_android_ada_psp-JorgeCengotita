@@ -17,13 +17,14 @@ class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	     http
-	             .authorizeHttpRequests(request -> request
-	                     .requestMatchers("/estudiantes/**")
-	                     .hasRole("ESTUDIANTES-OWNER")) // enable RBAC: Replace the .authenticated() call with the hasRole(...) call.
-	             .httpBasic(Customizer.withDefaults())
-	             .csrf(csrf -> csrf.disable());
-	     return http.build();
+	    http
+	        .authorizeHttpRequests(request -> request
+	            .requestMatchers("/swagger-ui/*", "/v3/api-docs/*").permitAll()  // Permitir acceso a Swagger UI
+	            .requestMatchers("/estudiantes/").hasRole("ESTUDIANTES-OWNER")
+	            .anyRequest().authenticated())  // Todos los demás request necesitan autenticación
+	        .httpBasic(Customizer.withDefaults())
+	        .csrf(csrf -> csrf.disable());
+	    return http.build();
 	}
 
     @Bean
