@@ -40,7 +40,7 @@ class EstudiantesController {
 	    Estudiantes savedEstudiantes = estudiantesRepository.save(newEstudiantes);
 	    URI locationOfNewEstudiantes = ucb
 	            .path("estudiantes/{id}")
-	            .buildAndExpand(savedEstudiantes.id())
+	            .buildAndExpand(savedEstudiantes.getId())
 	            .toUri();
 	    return ResponseEntity.created(locationOfNewEstudiantes).build();
 	}
@@ -60,7 +60,7 @@ class EstudiantesController {
 	private ResponseEntity<Void> putEstudiantes(@PathVariable Integer requestedId, @RequestBody Estudiantes estudiantesUpdate, Principal principal) {
 		Estudiantes estudiantes = findEstudiantes(requestedId, principal);
 	    if (estudiantes != null) {
-	        Estudiantes updatedEstudiantes = new Estudiantes(estudiantes.id(), estudiantesUpdate.nombre(), estudiantes.apellidos(), estudiantes.correo(), estudiantes.dni(), principal.getName());
+	        Estudiantes updatedEstudiantes = new Estudiantes(estudiantes.getId(), estudiantesUpdate.getNombre(), estudiantes.getApellidos(), estudiantes.getCorreo(), estudiantes.getDni(), principal.getName());
 	        estudiantesRepository.save(updatedEstudiantes);
 	        return ResponseEntity.noContent().build();
 	    }

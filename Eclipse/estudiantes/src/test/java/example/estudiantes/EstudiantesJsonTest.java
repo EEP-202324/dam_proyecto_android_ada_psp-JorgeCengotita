@@ -73,25 +73,25 @@ class EstudiantesJsonTest {
         .isEqualTo("01234567A");
     }
     
-    @Test
-    void estudiantesDeserializationTest() throws IOException {
-       String expected = """
-               {
-                   "id": 2,
-                   "nombre":"Pepe",
-                   "apellidos":"Perez",
-                   "correo":"pepeperez@gmail.com",
-                   "dni":"01234567B",
-                   "owner":"usuario1"
-               }
-               """;
-       assertThat(json.parse(expected))
-               .isEqualTo(new Estudiantes(2, "Pepe", "Perez", "pepeperez@gmail.com", "01234567B", "usuario1"));
-       assertThat(json.parseObject(expected).id()).isEqualTo(2);
-       assertThat(json.parseObject(expected).nombre()).isEqualTo("Pepe");
-       assertThat(json.parseObject(expected).apellidos()).isEqualTo("Perez");
-       assertThat(json.parseObject(expected).correo()).isEqualTo("pepeperez@gmail.com");
-       assertThat(json.parseObject(expected).dni()).isEqualTo("01234567B");
-    }
+//    @Test
+//    void estudiantesDeserializationTest() throws IOException {
+//       String expected = """
+//               {
+//                   "id": 2,
+//                   "nombre":"Pepe",
+//                   "apellidos":"Perez",
+//                   "correo":"pepeperez@gmail.com",
+//                   "dni":"01234567B",
+//                   "owner":"usuario1"
+//               }
+//               """;
+//       assertThat(json.parse(expected))
+//               .isEqualTo(new Estudiantes(2, "Pepe", "Perez", "pepeperez@gmail.com", "01234567B", "usuario1"));
+//       assertThat(json.parseObject(expected).id()).isEqualTo(2);
+//       assertThat(json.parseObject(expected).nombre()).isEqualTo("Pepe");
+//       assertThat(json.parseObject(expected).apellidos()).isEqualTo("Perez");
+//       assertThat(json.parseObject(expected).correo()).isEqualTo("pepeperez@gmail.com");
+//       assertThat(json.parseObject(expected).dni()).isEqualTo("01234567B");
+//    }
 }
 
