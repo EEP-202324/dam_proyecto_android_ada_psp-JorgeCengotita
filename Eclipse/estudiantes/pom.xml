@@ -50,18 +50,10 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.33</version>
 		</dependency>
-		<!-- Springdoc OpenAPI UI -->
 		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.6.9</version>
-		</dependency>
-
-		<!-- Springdoc OpenAPI Core -->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-webmvc-core</artifactId>
-			<version>1.6.9</version>
+		  <groupId>org.springdoc</groupId>
+		  <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		  <version>2.0.3</version>
 		</dependency>
 	</dependencies>
 
