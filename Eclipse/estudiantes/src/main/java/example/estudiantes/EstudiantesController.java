@@ -13,7 +13,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
-@Repository
+//@Repository
 @RestController
 @RequestMapping("/estudiantes")
 class EstudiantesController {
@@ -24,7 +24,7 @@ class EstudiantesController {
 	   }
 
 	@GetMapping("/{requestedId}")
-	private ResponseEntity<Estudiantes> findById(@PathVariable Integer requestedId, Principal principal) {
+	public ResponseEntity<Estudiantes> findById(@PathVariable Integer requestedId, Principal principal) {
 		Estudiantes estudiantes = findEstudiantes(requestedId, principal);
 	    if (estudiantes != null) {
 	        return ResponseEntity.ok(estudiantes);
@@ -35,18 +35,18 @@ class EstudiantesController {
 
 	
 	@PostMapping
-	private ResponseEntity<Void> createEstudiantes(@RequestBody Estudiantes estudiantesUpdate, UriComponentsBuilder ucb, Principal principal) {
-	    Estudiantes newEstudiantes = new Estudiantes(null, "Pedro", null, null, null, principal.getName());
-	    Estudiantes savedEstudiantes = estudiantesRepository.save(newEstudiantes);
+	public ResponseEntity<Void> createEstudiantes(@RequestBody Estudiantes estudiantesUpdate, UriComponentsBuilder ucb, Principal principal) {
+	    Estudiantes savedEstudiantes = estudiantesRepository.save(estudiantesUpdate);
 	    URI locationOfNewEstudiantes = ucb
 	            .path("estudiantes/{id}")
 	            .buildAndExpand(savedEstudiantes.getId())
 	            .toUri();
 	    return ResponseEntity.created(locationOfNewEstudiantes).build();
 	}
+
 	
 	@GetMapping
-	private ResponseEntity<List<Estudiantes>> findAll(Pageable pageable, Principal principal) {
+	public ResponseEntity<List<Estudiantes>> findAll(Pageable pageable, Principal principal) {
 	    Page<Estudiantes> page = estudiantesRepository.findByOwner(principal.getName(),
 	    		PageRequest.of(
 	    		        pageable.getPageNumber(),
@@ -57,7 +57,7 @@ class EstudiantesController {
 	}
 	
 	@PutMapping("/{requestedId}")
-	private ResponseEntity<Void> putEstudiantes(@PathVariable Integer requestedId, @RequestBody Estudiantes estudiantesUpdate, Principal principal) {
+	public ResponseEntity<Void> putEstudiantes(@PathVariable Integer requestedId, @RequestBody Estudiantes estudiantesUpdate, Principal principal) {
 		Estudiantes estudiantes = findEstudiantes(requestedId, principal);
 	    if (estudiantes != null) {
 	        Estudiantes updatedEstudiantes = new Estudiantes(estudiantes.getId(), estudiantesUpdate.getNombre(), estudiantes.getApellidos(), estudiantes.getCorreo(), estudiantes.getDni(), principal.getName());
@@ -72,7 +72,7 @@ class EstudiantesController {
 	}
 	
 	@DeleteMapping("/{id}")
-	private ResponseEntity<Void> deleteEstudiantes(@PathVariable Integer id, Principal principal) {	    
+	public ResponseEntity<Void> deleteEstudiantes(@PathVariable Integer id, Principal principal) {	    
 	    if (estudiantesRepository.existsByIdAndOwner(id, principal.getName())) {
 	        estudiantesRepository.deleteById(id);
 	        return ResponseEntity.noContent().build();
