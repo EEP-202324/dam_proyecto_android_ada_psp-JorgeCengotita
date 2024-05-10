@@ -35,7 +35,7 @@ class EstudiantesController {
 
 	
 	@PostMapping
-	private ResponseEntity<Void> createEstudiantes(UriComponentsBuilder ucb, Principal principal) {
+	private ResponseEntity<Void> createEstudiantes(@RequestBody Estudiantes estudiantesUpdate, UriComponentsBuilder ucb, Principal principal) {
 	    Estudiantes newEstudiantes = new Estudiantes(null, "Pedro", null, null, null, principal.getName());
 	    Estudiantes savedEstudiantes = estudiantesRepository.save(newEstudiantes);
 	    URI locationOfNewEstudiantes = ucb
