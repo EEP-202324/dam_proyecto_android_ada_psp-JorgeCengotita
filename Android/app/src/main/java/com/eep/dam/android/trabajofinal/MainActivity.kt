@@ -6,11 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.eep.dam.android.trabajofinal.ui.theme.TrabajoFinalTheme
+import com.eep.dam.android.trabajofinal.ui.theme.Model.Estudiante
+import com.eep.dam.android.trabajofinal.ui.theme.Screens.PantallaAñadirEstudiantes
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,25 +23,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    // Mostrar la pantalla de añadir estudiante en lugar de la pantalla de saludo
+                    PantallaAñadirEstudiantes(
+                        onEstudianteAdded = {},
+                        onListarRegistrosClicked = {} // Proporcionar una función vacía como valor predeterminado
+                    )
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun DefaultPreview() {
     TrabajoFinalTheme {
-        Greeting("Android")
+        // Muestra la pantalla de añadir estudiante en la vista previa
+        PantallaAñadirEstudiantes(
+            onEstudianteAdded = {},
+            onListarRegistrosClicked = {} // Proporciona una función vacía como valor predeterminado
+        )
     }
 }
+
