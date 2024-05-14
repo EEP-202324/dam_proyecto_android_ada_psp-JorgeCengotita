@@ -13,6 +13,7 @@ import com.eep.dam.android.trabajofinal.ui.theme.TrabajoFinalTheme
 import com.eep.dam.android.trabajofinal.ui.theme.Model.Estudiante
 import com.eep.dam.android.trabajofinal.ui.theme.Screens.PantallaAñadirEstudiantes
 
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
