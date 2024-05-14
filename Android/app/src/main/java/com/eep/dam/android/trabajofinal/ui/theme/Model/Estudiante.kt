@@ -7,6 +7,5 @@ data class Estudiante(
     val nombre: String,
     val apellidos: String,
     val correo: String,
-    val dni: String,
-    val owner: String
+    val dni: String
 )

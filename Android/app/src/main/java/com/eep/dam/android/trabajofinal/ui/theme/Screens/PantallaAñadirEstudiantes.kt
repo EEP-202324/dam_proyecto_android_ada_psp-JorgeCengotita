@@ -32,7 +32,6 @@ fun PantallaAñadirEstudiantes(
     var apellidos by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var dni by remember { mutableStateOf("") }
-    var owner by remember { mutableStateOf("") }
 
     val context = LocalContext.current
 
@@ -92,16 +91,6 @@ fun PantallaAñadirEstudiantes(
                 .padding(horizontal = 8.dp) // Agrega un padding horizontal de 8.dp
         )
         Spacer(modifier = Modifier.height(7.dp)) // Agrega un espacio de 8dp entre los campos de entrada
-        OutlinedTextField(
-            value = owner,
-            onValueChange = { owner = it },
-            label = { Text("Owner") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-                .padding(horizontal = 8.dp) // Agrega un padding horizontal de 8.dp
-        )
-        Spacer(modifier = Modifier.height(7.dp)) // Agrega un    espacio de 8dp entre los campos de entrada
         Button(
             onClick = {
                 val estudiante = Estudiante(
@@ -110,7 +99,6 @@ fun PantallaAñadirEstudiantes(
                     apellidos = apellidos,
                     correo = correo,
                     dni = dni,
-                    owner = owner
                 )
                 onEstudianteAdded(estudiante)
                 // Aquí podrías llamar a una función para insertar el estudiante en la base de datos
