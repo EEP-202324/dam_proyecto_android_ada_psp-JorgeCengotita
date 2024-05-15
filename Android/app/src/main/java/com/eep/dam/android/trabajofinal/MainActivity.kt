@@ -33,17 +33,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TrabajoFinalTheme {
-        // Muestra la pantalla de añadir estudiante en la vista previa
-        PantallaAñadirEstudiantes(
-            onEstudianteAdded = {},
-            onListarRegistrosClicked = {} // Proporciona una función vacía como valor predeterminado
-        )
-    }
-}
-

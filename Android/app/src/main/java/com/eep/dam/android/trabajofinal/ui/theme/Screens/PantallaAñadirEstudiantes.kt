@@ -119,15 +119,3 @@ fun PantallaAñadirEstudiantes(
         }
     }
 }
-
-@ExperimentalSerializationApi
-@Preview(showBackground = true)
-@Composable
-fun PreviewAddEstudianteScreen() {
-    TrabajoFinalTheme {
-        PantallaAñadirEstudiantes(
-            onEstudianteAdded = {},
-            onListarRegistrosClicked = {} // Pasamos una función vacía para la previsualización
-        )
-    }
-}
