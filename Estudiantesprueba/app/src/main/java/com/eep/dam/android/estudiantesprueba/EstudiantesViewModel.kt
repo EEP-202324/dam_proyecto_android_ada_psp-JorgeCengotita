@@ -12,7 +12,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class EstudiantesViewModel : ViewModel() {
     private val username = "usuario1"
     private val password = "abc123"
@@ -41,6 +40,27 @@ class EstudiantesViewModel : ViewModel() {
             }
         })
     }
+
+    fun crearEstudiante(estudiante: Estudiante) {
+        val credentials = Credentials.basic(username, password)
+        val retrofit = RetrofitClient.getClient("http://10.0.2.2:8080/")
+        val apiService = retrofit.create(ApiService::class.java)
+
+        val call = apiService.crearEstudiante(credentials, estudiante)
+        call.enqueue(object : Callback<Estudiante> {
+            override fun onResponse(call: Call<Estudiante>, response: Response<Estudiante>) {
+                if (response.isSuccessful) {
+                    val nuevoEstudiante = response.body()
+                    // Aquí puedes manejar la respuesta si es necesario
+                } else {
+                    Log.e("Estudiantes", "Error al crear estudiante: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<Estudiante>, t: Throwable) {
+                Log.e("Estudiantes", "Error de red al crear estudiante", t)
+            }
+        })
+    }
+
 }
-
-
