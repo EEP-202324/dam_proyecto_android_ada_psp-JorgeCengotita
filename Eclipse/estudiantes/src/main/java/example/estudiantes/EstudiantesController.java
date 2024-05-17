@@ -35,6 +35,7 @@ class EstudiantesController {
 	
 	@PostMapping
 	public ResponseEntity<Void> createEstudiantes(@RequestBody Estudiantes estudiantesUpdate, UriComponentsBuilder ucb, Principal principal) {
+		estudiantesUpdate.setOwner("usuario1");
 	    Estudiantes savedEstudiantes = estudiantesRepository.save(estudiantesUpdate);
 	    URI locationOfNewEstudiantes = ucb
 	            .path("estudiantes/{id}")
