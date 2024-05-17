@@ -74,7 +74,7 @@ fun EstudianteCard(estudiante: Estudiante) {
                 style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Normal)
             )
             Text(
-                text = "Apellido: ${estudiante.apellido}",
+                text = "Apellido: ${estudiante.apellidos}",
                 color = Color.Black,
                 style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Normal)
             )
